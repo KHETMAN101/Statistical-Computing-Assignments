@@ -1,0 +1,125 @@
+---
+title: "PRACTICAL TWO"
+---
+
+**QUESTION 1**
+
+```{r}
+set.seed(1)
+
+x <- 1:100 # The x values of the simulation
+
+n <- length(x) # The total number of values in x
+
+y <- sin(x/10) + rnorm(n,mean = 0 , sd = 0.2)#The y values of the simulation
+```
+
+**QUESTION 2** 
+```{r}
+
+#My own lowess funtion
+custom_lowess <- function(x, y, f) {
+  smoothed_yvalues <- as.numeric(n)#calculate the smoothed values
+  f <- 0.2  # Smoothing parameter
+  
+  k <- ceiling(f * n) #for the weight formula
+  
+  #Iteration step from 1 to n
+  for (i in 1:n) {
+    dist_i <- abs(x - x[i])# Calculate the distances
+    
+    closest_neighbors <- order(dist_i)[1:k]# Formula to compute weights
+    
+    d_max <- max(dist_i[closest_neighbors])
+    
+    weights_formula <- (1 - (dist_i[closest_neighbors] / d_max)^3)^3
+    
+    X <- cbind(1, x[closest_neighbors])# Create a matrix for regression
+    
+    w <- diag(weights_formula)  # To a make a diagonal matrix of weights
+    
+    #to_useinbeta <- solve(t(X) %*% w %*% X)#To calculate bet coefficient
+    
+    #beta <- to_useinbeta %*% t(X) %*% w %*% y[neighbors]
+    beta <- solve(t(X) %*% w %*% X) %*%                                               t(X) %*% w %*% y[closest_neighbors]
+    
+    smoothed_yvalues[i] <- sum(beta * c(1, x[i]))# The smoothed value 
+  }
+  return(smoothed_yvalues)
+}
+```
+**QUESTION 3**
+```{r}
+y_hat_values <- lowess(x,y,f = 0.2)$y#using the built in lowess
+
+y_hat_values_2 <- custom_lowess(x, y, f) # using the custom lowess
+
+
+# Plot both smoothed curves
+plot(x, y, xlab = "X", ylab = "Y", pch = 19, col = "blue", cex = 0.5)
+lines(x, y_hat_values_2, col = "green", lwd = 2) 
+lines(x, y_hat_values, col = "red", lwd = 2, lty = 2)  
+legend("topright" ,legend = c("custom lowess", "built_in_lowes"), col = c("green", "red" ), lty = c(1,2) )
+
+
+```
+```{r}
+# My own lowess function
+custom_lowess <- function(x, y, f) {
+  n <- length(x)  # Number of data points
+  smoothed_yvalues <- numeric(n)  # Initialize smoothed values
+  
+  k <- ceiling(f * n)  # Number of closest neighbors based on span f
+  
+  # Iteration step from 1 to n
+  for (i in 1:n) {
+    dist_i <- abs(x - x[i])  # Calculate the distances between xi and all xj
+    
+    # Get the indices of the k closest neighbors
+    closest_neighbors <- order(dist_i)[1:k]
+    
+    # Calculate d_max, the distance to the farthest neighbor among the k neighbors
+    d_max <- max(dist_i[closest_neighbors])
+    
+    # Compute the weights using the tricube kernel
+    weights_formula <- (1 - (dist_i[closest_neighbors] / d_max)^3)^3
+    
+    # Create the design matrix X for weighted regression (adding intercept column)
+    X <- cbind(1, x[closest_neighbors])
+    
+    # Create the weight matrix W (diagonal matrix of weights)
+    W <- diag(weights_formula)
+    
+    # Perform weighted least squares to calculate regression coefficients
+    beta <- solve(t(X) %*% W %*% X) %*% t(X) %*% W %*% y[closest_neighbors]
+    
+    # The smoothed value for xi is the predicted value
+    smoothed_yvalues[i] <- sum(beta * c(1, x[i]))  # Predicted value at xi
+  }
+  
+  return(smoothed_yvalues)
+}
+
+# Example usage
+set.seed(1)
+x <- 1:100
+n <- length(x)
+y <- sin(x / 10) + rnorm(n, mean = 0, sd = 0.2)
+
+# Using built-in lowess
+y_hat_values <- lowess(x, y, f = 0.2)$y
+
+# Using custom lowess
+y_hat_values_2 <- custom_lowess(x, y, f = 0.2)
+
+# Plot both smoothed curves
+plot(x, y, xlab = "X", ylab = "Y", pch = 19, col = "blue", cex = 0.5)
+lines(x, y_hat_values_2, col = "green", lwd = 2)  # Custom LOWESS curve
+lines(x, y_hat_values, col = "red", lwd = 2, lty = 2)  # Built-in LOWESS curve
+
+# Add a legend
+legend("topright", legend = c("custom lowess", "built_in_lowess"), 
+       col = c("green", "red"), lty = c(1, 2))
+
+```
+

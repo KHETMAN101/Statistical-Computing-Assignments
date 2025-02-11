@@ -1,0 +1,24 @@
+project:
+  type: book
+  output-dir: _site
+
+book:
+  title: "Statistical Computing  PROJECT 1"
+  chapters:
+    - index.qmd
+    - PRACTICAL ONE.qmd
+    - PRACTICAL TWO.qmd
+    - PRACTICAL THREE.qmd
+  sidebar:
+    border: true
+    background: light
+    position: right
+  navbar:
+    background: light
+    
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left

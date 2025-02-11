@@ -1,0 +1,70 @@
+---
+title: "Practical ONE"
+format: html
+---
+
+**QUESTION 1**
+```{r}
+dataset_airquality <- airquality
+
+missing_values <- is.na((dataset_airquality))# prints rows with na values
+
+dataset_airquality[!is.na(dataset_airquality)]
+``` 
+
+**QUESTION 2**
+```{r}
+
+mean_ozone<- mean(dataset_airquality$Ozone, na.rm = TRUE)
+
+mean_temp <- mean(dataset_airquality$Temp, na.rm = TRUE)
+
+min_ozone <- min(dataset_airquality$Ozone, na.rm = TRUE)
+
+min_temp <-min(dataset_airquality$Temp, na.rm = TRUE)
+
+max_ozone <- max(dataset_airquality$Ozone, na.rm = TRUE)
+
+max_temp <-max(dataset_airquality$Temp, na.rm = TRUE)
+
+sd_ozone <- sd(dataset_airquality$Ozone, na.rm = TRUE)
+
+sd_temp <-sd(dataset_airquality$Temp, na.rm = TRUE)
+
+ozone_results <- c(min_ozone,mean_ozone ,max_ozone, sd_ozone)
+
+temp_results <- c(min_temp,mean_temp ,max_temp, sd_temp)
+
+summary_data <- cbind(ozone_results, temp_results)
+
+row.names(summary_data) <- c("Min","Mean","Max","Sd")
+```
+**QUESTION 3**
+```{r}
+x_matrix <- cbind(1, as.matrix(cars$speed))
+
+y_matrix <- as.matrix(cars$dist)
+
+beta_function <- function(x,y){
+  
+  to_useinbeta <- solve(t(x) %*% x )
+  
+  b <- to_useinbeta %*% t(x)%*% (y)
+  
+  return(b )
+}
+
+beta <- beta_function(x_matrix ,y_matrix)
+
+```
+
+**QUESTION 4**
+```{r}
+dataset <- cars
+
+linear_model <- lm(dist ~ speed, data = dataset)
+
+summary(linear_model)
+
+```
+
